@@ -1,0 +1,90 @@
+<style>
+  .product-bundle{
+  	background-color: #FFFFFF!important;
+    border-radius: 8px!important;
+    box-shadow: 0px 0px 10px 0px #c4c4c4 !important;
+    padding: 20px 0;
+  }
+  
+  .product-bundle:hover{
+    border: 4px solid #d33; 
+  }
+  .product-bundle__title{
+    font-size: 1.5em;
+    text-align: center;
+  }
+  .product-bundle__image{
+   	width: 100%; 
+  }
+  
+  .product-bundle__meta{
+    text-align: center;
+    font-size: 1.3em;
+    padding: 15px 0;
+  }
+  
+  .product-bundle__form{
+   	text-align: center; 
+  }
+  .product-bundle__submit{
+    width: 80%;
+    height: 50px;
+    font-size: 1.3em;
+    background-color: #d33;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 30px;
+  }
+  
+  .product-bundle-selector-wrapper{
+    width: 100%;
+    padding: 10px;
+  }
+  
+  .product-bundle-selector-wrapper select{
+    width: 100%;
+  }
+  
+  .product-bundle-form__variants{
+    display: none;
+  }
+</style>
+
+<div class="product-bundle {% unless product.available %} product-bundle--sold-out{% endunless %}">
+  <a class="product-bundle__link" href="{{ product.url | within: collection }}">
+    <div class="h4 product-bundle__title">{{ product.title }}</div>
+    <img class="product-bundle__image" src="{{ product.featured_image.src | img_url: grid_image_width, scale: grid_image_scale }}" alt="{{ product.featured_image.alt }}">
+    <div class="product-bundle__meta">
+        {% include 'product-bundle-price' %}
+    </div>
+  </a>
+   <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-bundle__form product-form--hide-variant-labels" >
+     {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+     {% for option in product.options_with_values %}
+     <div class="product-bundle-selector-wrapper product-bundle-form__item">
+       <select class="product-bundle-single-option-selector product-bundle-form__input" id="SingleOptionSelector-{{ forloop.index0 }}" data-index="option{{ forloop.index }}">
+         {% for value in option.values %}
+         <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+         {% endfor %}
+       </select>
+     </div>
+     {% endfor %}
+     {% endunless %}
+
+     <select name="id" class="product-bundle-form__variants">
+       {% for variant in product.variants %}
+       {% if variant.available %}
+       <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} value="{{ variant.id }}">
+         {{ variant.title }}
+       </option>
+       {% else %}
+       <option disabled="disabled">{{ variant.title }} - {{ 'products.product.sold_out' | t }}</option>
+       {% endif %}
+       {% endfor %}
+     </select>
+
+      <input type="hidden" id="Quantity" name="quantity" value="1" min="1" class="product-form__input" pattern="[0-9]*">
+
+      <input type="submit" value="Add to cart" class="product-bundle__submit" />
+  </form>
+</div>
