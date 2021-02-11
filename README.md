@@ -9,3 +9,5 @@ Copy the following code to product-template.liquid (normally to the end of the f
 
 ```
 
+Check https://youtu.be/J_zOy9VjNgI for the tutorials
+
