@@ -7,10 +7,17 @@
     color: #666;
   }
   
+  {% if compare_at_price > price %}
   .product-bundle-price__price{
     color: #bbb;
     font-size: 1em;
   }
+  {% else %}
+  .product-bundle-price__price{
+    color: #111;
+    font-size: 1.1em;
+  }
+  {% endif %}
   .product-bundle-price__sale{
     color: #111;
     font-weight: bold;
