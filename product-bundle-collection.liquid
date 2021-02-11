@@ -96,7 +96,8 @@
       var productId = $(e.target).closest('.bundle_item').attr('id');
       var variant = bundleProductMapping[productId][variantsString];
       if (variant){
-        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__price').html('$'+variant.compare_at_price);
+        var finalPrice = variant.compare_at_price || variant.price ;
+        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__price').html('$'+finalPrice);
         $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__sale').html('$'+variant.price);
         $(e.target).closest('.product-bundle__form').find(".product-bundle__submit").removeAttr("disabled");
         $(e.target).closest('.product-bundle__form').find('[name="id"]').val(variant.id);
