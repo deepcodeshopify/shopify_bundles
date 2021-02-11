@@ -1,0 +1,112 @@
+<style>
+  
+.bundle_collection__title{
+  text-align:center; 
+  padding: 20px; 
+  font-size: 1.8em;
+  color: #111;
+}
+.bundle_item {
+  float: left;
+  width: 100%; 
+  margin-bottom: 20px;
+}
+@media only screen and (min-width: 750px) {
+  .bundle_item {
+    {% if columns == 4 %}
+    width: 25%;
+   	margin-bottom: 0;
+    {% else %}
+    {% if columns == 3 %}
+    width: 33%;
+    margin-bottom: 0;
+    {% else %}
+    width: 50%;
+    margin-bottom: 20px;
+    {% endif %}
+    {% endif %}
+    padding-left: 30px;
+  }
+}
+</style>
+
+{% assign bundle_tag = ""  %}
+{% for tag in product.tags %}
+	{% if tag contains "bundle-" %}
+  		{% assign bundle_tag = tag  %}
+	{% endif %}
+{% endfor %}
+
+<script>
+  var bundleProducts = [];
+</script>
+
+{% assign has_bundle = false  %}
+{% for product in collections.all.products %}
+	{% if product.tags contains bundle_tag %}
+  		{% assign has_bundle = true  %}
+	{% endif %}
+{% endfor %}
+
+{% if has_bundle %}
+<div class="page-width" id="Collection" style="margin-top: 50px;">
+  <p class="bundle_collection__title"> {{ bundle_list_title }} </p>
+  {%- assign grid_item_width = 'medium-up--one-third' -%}
+  {%- assign image_size = '530x530' -%}
+   
+  <div class="bundle_collection">
+  {% assign has_bundle = false  %}
+  {% for product in collections.all.products %}
+  	{% if product.tags contains bundle_tag %}
+    <script>
+      bundleProducts.push({{ product | json }});
+    </script>
+    <div class="bundle_item" id="{{ product.id }}">
+      {% include 'product-bundle-card' %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  </div>
+</div>
+
+<script>
+  var bundleProductMapping = {};
+  bundleProducts.forEach(function(p){
+    if (!bundleProductMapping[p.id])
+      bundleProductMapping[p.id] = {};
+    p['variants'].forEach(function(v){
+      bundleProductMapping[p.id][v.title] = {
+        "price": v.price/100.0,
+        "compare_at_price": v. compare_at_price/100.0,
+        "id": v.id
+      }
+    })
+  })
+  
+   $(document).ready(function(){
+    $('.product-bundle-single-option-selector').change(function(e){
+      var selectedVariants = [];
+          
+      $(e.target).closest('.product-bundle__form').find('.product-bundle-single-option-selector').each(
+        function(el){
+          selectedVariants.push($(this).val());
+        }
+      )
+      var variantsString = selectedVariants.join(" / ");
+      var productId = $(e.target).closest('.bundle_item').attr('id');
+      var variant = bundleProductMapping[productId][variantsString];
+      if (variant){
+        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__price').html('$'+variant.compare_at_price);
+        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__sale').html('$'+variant.price);
+        $(e.target).closest('.product-bundle__form').find(".product-bundle__submit").removeAttr("disabled");
+        $(e.target).closest('.product-bundle__form').find('[name="id"]').val(variant.id);
+
+      }else{
+        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__price').html("");
+        $(e.target).closest('.product-bundle').find('.product-bundle__meta .product-bundle-price__sale').html("");
+        $(e.target).closest('.product-bundle__form').find(".product-bundle__submit").attr("disabled", "disabled")
+      }
+    }) 
+  })
+</script>
+{% endif %}
