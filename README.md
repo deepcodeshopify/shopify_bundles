@@ -5,7 +5,7 @@ Copy the following code to product-template.liquid (normally to the end of the f
 `bundle_list_title` is the title of the bundle list section and `columns` is how many bundle products per row in the section on desktop view (default to 1 for mobile view).
 
 ```
-{% include 'product-bundle-collection', bundle_list_title: 'Choose a bundle that works best for you', columns: 2 %}
+{% include 'product-bundle-collection', bundle_list_title: 'Choose a bundle that works best for you', columns: 3 %}
 
 ```
 
